@@ -25,8 +25,9 @@
 
             return {
                 restrict: "E",
+                replace: false,
                 controller: function ($scope) {
-                    $scope.regex = "^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$";
+                    $scope.regex = new RegExp("^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$");
                     $scope.versionSpecifiers = [
                         {
                             symbol: "~=",
@@ -80,25 +81,61 @@
                         $scope.Result[id].fullVersion = $scope.Result[id].fullVersion.replace(oldSpecifier, selectedVesrionSpecifier);
                     }
 
-                    var validateVersionNumber = function (modifiedVersion) {
+                    $scope.deleteRow = function (id) {
+                        $scope.Result.splice(id, 1);
+                    }
 
+                    $scope.save = function () {
+                        debugger
+                        var emptyRowIndex = $scope.Result.findIndex(x => x.library === "");
+                        if (emptyRowIndex != -1) {
+                            $scope.Result.splice(emptyRowIndex, 1);
+                        }
+                        let result = $scope.Result.map(a => a.fullVersion);
+                    }
+
+                    var validateVersionNumber = function (modifiedVersion) {
+                        // console.log(/^([a-z0-9]{5,})$/.test('abc1'));
+                        return $scope.regex.test(modifiedVersion);
+                    }
+
+                    $scope.libraryTextChange = function (id, library) {
+                        debugger;
+                        $scope.currentId = id;
+                        if ($scope.subForm.$valid) {
+                            var oldVersion = $scope.Result[id].library;
+                            // $scope.Result[id].ver = modifiedVersion;
+                            $scope.Result[id].library = library
+                            $scope.Result[id].fullVersion = library + "" + $scope.Result[id].versionSpecifier + "" + $scope.Result[id].ver
+                            $scope.Result[id].isValid = true;
+                        } else {
+                            $scope.Result[id].isValid = false;
+                        }
                     }
 
                     $scope.addNewRow = function () {
-                        $scope.Result.push({
-                            id: $scope.Result.length,
-                            library: "",
-                            versionSpecifier: "==",
-                            ver: "0.0",
-                            fullVersion: "",
-                            isValid: false
-                        })
+                        debugger;
+                        var isRowNotAdded = $scope.Result.filter(x => x.library === "").length === 0;
+
+                        if (isRowNotAdded) {
+                            $scope.Result.push({
+                                id: $scope.Result.length,
+                                library: "",
+                                versionSpecifier: "==",
+                                ver: "0.0",
+                                fullVersion: "",
+                                isValid: false
+                            })
+                        }
+
                     }
 
                     $scope.versionChange = function (id, modifiedVersion) {
                         debugger;
                         $scope.currentId = id;
-                        if ($scope.subForm.$valid) {
+
+                        let isValid = validateVersionNumber(modifiedVersion);
+                        if (isValid) {
                             var oldVersion = $scope.Result[id].ver;
                             $scope.Result[id].ver = modifiedVersion;
                             $scope.Result[id].fullVersion = $scope.Result[id].fullVersion.replace(oldVersion, modifiedVersion);
@@ -128,26 +165,10 @@
                                     isValid: true
                                 })
                             }
-
-
-
                         }
 
                     }
 
-
-                    // for (var i = 0; i < $scope.Result.length; i++) {
-                    //     var row = document.querySelector("table").insertRow(-1);
-                    //     var rowData = $scope.Result[i];
-                    //     var letter = "Library" //String.fromCharCode("A".charCodeAt(0) + j - 1);
-                    //     row.insertCell(-1).innerHTML = i + 1;
-                    //     row.insertCell(-1).innerHTML = "<input id='" + letter + i + "'/>";
-                    //     row.insertCell(-1).innerHTML = "<input id='" + letter + i + "'/>";
-                    //     // for (var j = 0; j < 4; j++) {
-                    //     //     var letter = String.fromCharCode("A".charCodeAt(0) + j - 1);
-                    //     //     row.insertCell(-1).innerHTML = i && j ? "<input id='" + letter + i + "'/>" : i || letter;
-                    //     // }
-                    // }
                 },
                 templateUrl: "views/temp.html"
             };
