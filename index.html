@@ -2,13 +2,27 @@
 <html>
 <script src="ang.js"></script>
 
-<body ng-app="myApp">
+<body ng-app="myApp" ng-controller="GreetingController">
 
-    <w3-test-directive></w3-test-directive>
-
+    <w3-test-directive versions="pythonVersions"></w3-test-directive>
+    {{pythonVersions}}
     <script>
         /// <reference path="./typings/index.d.ts" />
         var app = angular.module("myApp", []);
+        app.controller("GreetingController", function ($scope) {
+            $scope.pythonVersions = [
+                "Soappy>=0.12.22",
+                "pycrypto>=2.6.1",
+                "suds>=0.4",
+                "Python-ldap>=2.4.19",
+                "paramiko>=1.15.2",
+                "nose>=1.3.4",
+                "selenium>=2.44.0",
+                "bottle>=0.12.8",
+                "CherryPy>=3.6.0",
+                "pika>=0.9.14",
+            ];
+        });
         app.directive("w3TestDirective", function () {
             // Version specifiers
             // https://pypi.org/project/Parsley/
@@ -26,7 +40,12 @@
             return {
                 restrict: "E",
                 replace: false,
+                scope: {
+                    "versions": "="
+                },
                 controller: function ($scope) {
+
+                    console.log("$scope.versions", $scope.versions);
                     $scope.regex = new RegExp("^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$");
                     $scope.versionSpecifiers = [
                         {
@@ -62,18 +81,20 @@
                             definition: "Arbitrary equality clause."
                         }
                     ];
-                    $scope.pythonVersions = [
-                        "Soappy>=0.12.22",
-                        "pycrypto>=2.6.1",
-                        "suds>=0.4",
-                        "Python-ldap>=2.4.19",
-                        "paramiko>=1.15.2",
-                        "nose>=1.3.4",
-                        "selenium>=2.44.0",
-                        "bottle>=0.12.8",
-                        "CherryPy>=3.6.0",
-                        "pika>=0.9.14",
-                    ];
+                    // $scope.pythonVersions = [
+                    //     "Soappy>=0.12.22",
+                    //     "pycrypto>=2.6.1",
+                    //     "suds>=0.4",
+                    //     "Python-ldap>=2.4.19",
+                    //     "paramiko>=1.15.2",
+                    //     "nose>=1.3.4",
+                    //     "selenium>=2.44.0",
+                    //     "bottle>=0.12.8",
+                    //     "CherryPy>=3.6.0",
+                    //     "pika>=0.9.14",
+                    // ];
+
+                    $scope.pythonVersions = $scope.versions;
                     $scope.specifierChange = function (id, selectedVesrionSpecifier) {
                         debugger;
                         var oldSpecifier = $scope.Result[id].versionSpecifier;
@@ -92,6 +113,7 @@
                             $scope.Result.splice(emptyRowIndex, 1);
                         }
                         let result = $scope.Result.map(a => a.fullVersion);
+                        $scope.versions = result;
                     }
 
                     var validateVersionNumber = function (modifiedVersion) {
