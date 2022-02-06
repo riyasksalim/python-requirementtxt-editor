@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<script src="ang.js"></script>
+
+<body ng-app="myApp">
+
+    <w3-test-directive></w3-test-directive>
+
+    <script>
+        /// <reference path="./typings/index.d.ts" />
+        var app = angular.module("myApp", []);
+        app.directive("w3TestDirective", function () {
+            // Version specifiers
+            // https://pypi.org/project/Parsley/
+            // https://www.python.org/dev/peps/pep-0440/#appendix-b-parsing-version-strings-with-regular-expressions
+
+
+            //             ~=: Compatible release clause
+            // ==: Version matching clause
+            // !=: Version exclusion clause
+            // <=, >=: Inclusive ordered comparison clause
+            // <, >: Exclusive ordered comparison clause
+            // ===: Arbitrary equality clause.
+
+
+            return {
+                restrict: "E",
+                controller: function ($scope) {
+                    $scope.regex = "^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$";
+                    $scope.versionSpecifiers = [
+                        {
+                            symbol: "~=",
+                            definition: "Compatible release clause"
+                        },
+                        {
+                            symbol: "==",
+                            definition: "Version matching clause"
+                        },
+                        {
+                            symbol: "!=",
+                            definition: "Version exclusion clause"
+                        },
+                        {
+                            symbol: "<=",
+                            definition: "Inclusive ordered comparison clause"
+                        },
+                        {
+                            symbol: ">=",
+                            definition: "Inclusive ordered comparison clause"
+                        },
+                        // {
+                        //     symbol: "<",
+                        //     definition: "Exclusive ordered comparison clause"
+                        // },
+                        // {
+                        //     symbol: ">",
+                        //     definition: "Exclusive ordered comparison clause"
+                        // },
+                        {
+                            symbol: "===",
+                            definition: "Arbitrary equality clause."
+                        }
+                    ];
+                    $scope.pythonVersions = [
+                        "Soappy>=0.12.22",
+                        "pycrypto>=2.6.1",
+                        "suds>=0.4",
+                        "Python-ldap>=2.4.19",
+                        "paramiko>=1.15.2",
+                        "nose>=1.3.4",
+                        "selenium>=2.44.0",
+                        "bottle>=0.12.8",
+                        "CherryPy>=3.6.0",
+                        "pika>=0.9.14",
+                    ];
+                    $scope.specifierChange = function (id, selectedVesrionSpecifier) {
+                        debugger;
+                        var oldSpecifier = $scope.Result[id].versionSpecifier;
+                        $scope.Result[id].versionSpecifier = selectedVesrionSpecifier;
+                        $scope.Result[id].fullVersion = $scope.Result[id].fullVersion.replace(oldSpecifier, selectedVesrionSpecifier);
+                    }
+
+                    var validateVersionNumber = function (modifiedVersion) {
+
+                    }
+
+                    $scope.addNewRow = function () {
+                        $scope.Result.push({
+                            id: $scope.Result.length,
+                            library: "",
+                            versionSpecifier: "==",
+                            ver: "0.0",
+                            fullVersion: "",
+                            isValid: false
+                        })
+                    }
+
+                    $scope.versionChange = function (id, modifiedVersion) {
+                        debugger;
+                        $scope.currentId = id;
+                        if ($scope.subForm.$valid) {
+                            var oldVersion = $scope.Result[id].ver;
+                            $scope.Result[id].ver = modifiedVersion;
+                            $scope.Result[id].fullVersion = $scope.Result[id].fullVersion.replace(oldVersion, modifiedVersion);
+                            $scope.Result[id].isValid = true;
+                        } else {
+                            $scope.Result[id].isValid = false;
+                        }
+
+                    }
+
+                    $scope.Result = [];
+                    for (let index = 0; index < $scope.pythonVersions.length; index++) {
+                        const version = $scope.pythonVersions[index];
+                        for (let z = 0; z < $scope.versionSpecifiers.length; z++) {
+                            const versionSpecifier = $scope.versionSpecifiers[z].symbol;
+                            var res = version.split(versionSpecifier);
+
+                            if (version.includes(versionSpecifier) && $scope.Result && res.length > 0 && !$scope.Result.includes(x => x.library === res[0])) {
+                                console.log(res, versionSpecifier)
+
+                                $scope.Result.push({
+                                    id: index,
+                                    library: res[0],
+                                    versionSpecifier: versionSpecifier,
+                                    ver: res[1],
+                                    fullVersion: version,
+                                    isValid: true
+                                })
+                            }
+
+
+
+                        }
+
+                    }
+
+
+                    // for (var i = 0; i < $scope.Result.length; i++) {
+                    //     var row = document.querySelector("table").insertRow(-1);
+                    //     var rowData = $scope.Result[i];
+                    //     var letter = "Library" //String.fromCharCode("A".charCodeAt(0) + j - 1);
+                    //     row.insertCell(-1).innerHTML = i + 1;
+                    //     row.insertCell(-1).innerHTML = "<input id='" + letter + i + "'/>";
+                    //     row.insertCell(-1).innerHTML = "<input id='" + letter + i + "'/>";
+                    //     // for (var j = 0; j < 4; j++) {
+                    //     //     var letter = String.fromCharCode("A".charCodeAt(0) + j - 1);
+                    //     //     row.insertCell(-1).innerHTML = i && j ? "<input id='" + letter + i + "'/>" : i || letter;
+                    //     // }
+                    // }
+                },
+                templateUrl: "views/temp.html"
+            };
+        });
+    </script>
+
+</body>
+
+</html>

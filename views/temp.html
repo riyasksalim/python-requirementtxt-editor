@@ -1,0 +1,107 @@
+<h1>Made by a !</h1>
+
+
+<style>
+    /* li {
+        list-style: none;
+    }
+
+    li:before {
+        content: "✓ ";
+    }
+
+    input {
+        border: none;
+        width: 80px;
+        font-size: 14px;
+        padding: 2px;
+    }
+
+    input:hover {
+        background-color: #eee;
+    }
+
+    input:focus {
+        background-color: #ccf;
+    }
+
+    input:not(:focus) {
+        text-align: right;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    td {
+        border: 1px solid #999;
+        padding: 0;
+    }
+
+    tr:first-child td,
+    td:first-child {
+        background-color: #ccc;
+        padding: 1px 3px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    footer {
+        font-size: 80%;
+    } */
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td,
+    th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
+
+
+<!-- <table></table> -->
+<button ng-click="addNewRow()">add</button>
+
+<table ng-form="subForm">
+    <tr>
+        <th>Library</th>
+        <th>Version Specifier</th>
+        <th>Version</th>
+        <th>full Version</th>
+
+    </tr>
+    <tr ng-repeat="version in Result">
+        <td ng-if="version.library">{{version.library}}</td>
+        <td ng-if="version.library===''">
+            <input type=" text" ng-model="modifiedVersion1" required ng-pattern="regex" />
+        </td>
+        <td><select ng-init="selectedVesrionSpecifier=version.versionSpecifier"
+                ng-change="specifierChange(version.id,selectedVesrionSpecifier)" ng-model="selectedVesrionSpecifier"
+                class="form-control">
+                <option ng-repeat="specifier in versionSpecifiers" value="{{specifier.symbol}}">
+                    {{specifier.symbol}}({{specifier.definition}})
+                </option>
+            </select></td>
+        <td>
+            <!-- <input id="{{version.library}}" type="text" onchange="versionChange(version)" value="{{version.ver}}" /> -->
+            <input type="text" ng-change="versionChange(version.id,modifiedVersion)" ng-model="modifiedVersion" required
+                ng-pattern="regex" ng-init="modifiedVersion=version.ver" />
+        </td>
+        <td>{{version.fullVersion}}</td>
+    </tr>
+
+</table>
+
+
+
+{{Result}}
+{{subForm.$valid}}
